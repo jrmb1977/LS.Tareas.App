@@ -1,0 +1,89 @@
+﻿@using LS.Tareas.App.Models
+@using System.Globalization
+@model TareaView
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    int ID = Model.ID;
+    bool tareaCompletada = Model.Completada;
+    string tareaEstado = tareaCompletada ? "SI" : "NO";
+    CultureInfo culture = new CultureInfo("es-EC");
+    string fechaCreacion = Model.FechaCreacion.ToString("d-MMM-yyyy HH:mm:ss", culture).Replace(".", "");
+    string fechaVencimiento = Model.FechaVencimiento.ToString("d-MMM-yyyy", culture).Replace(".", "");
+    string fechaCompletada = Model.FechaCompletada.ToString("d-MMM-yyyy HH:mm:ss", culture).Replace(".", "");
+    string LabelTitulo = "Detalle de Tarea";
+    string LabelDetail = String.Format("Tarea ID # {0}", ID);
+    string LabelBack = "Regresar";
+    string LabelEdit = "Editar";
+    string LabelDelete = "Eliminar";
+    string LabelUpdateStatus = "Marcar como Completada";
+}
+
+<h2>@LabelTitulo</h2>
+<div>
+    <h4>@LabelDetail</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Titulo)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Titulo)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Descripcion)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Descripcion)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.FechaCreacion)
+        </dt>
+
+        <dd>
+            @fechaCreacion
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.FechaVencimiento)
+        </dt>
+
+        <dd>
+            @fechaVencimiento
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Completada)
+        </dt>
+
+        <dd>
+            @tareaEstado
+        </dd>
+        @if (tareaCompletada)
+        {
+            <dt>
+                @Html.DisplayNameFor(model => model.FechaCompletada)
+            </dt>
+
+            <dd>
+                @fechaCompletada
+            </dd>
+        }
+    </dl>
+</div>
+<p>
+    @Html.ActionLink(LabelEdit, "Edit", new { id = Model.ID }) |
+    @Html.ActionLink(LabelBack, "Index") |
+    @if (!tareaCompletada)
+    {
+        @Html.ActionLink(LabelUpdateStatus, "UpdateStatus", new { id = Model.ID }, new { @onclick = "javascript: return confirm('¿Esta Completada la Tarea?');" })
+        @String.Format(" {0} ", "|");
+    }
+    @Html.ActionLink(LabelDelete, "Delete", new { id = Model.ID }, new { @onclick = "javascript: return confirm('¿Esta seguro que desea eliminar?');" })
+</p>

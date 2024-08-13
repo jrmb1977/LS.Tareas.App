@@ -1,0 +1,69 @@
+﻿@using LS.Tareas.App.Models
+@model IEnumerable<TareasView>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    string LabelTitulo = "Lista de Tareas";
+    string LabelNew = "Nueva Tarea";
+    string LabelEdit = "Editar";
+    string LabelDelete = "Eliminar";
+    string LabelDetails = "Detalles";
+    int numberOfRecords = Model.Count();
+    string LabelRecords = String.Format("{0} registro(s)", numberOfRecords);
+
+    var kvPairs = Model.Select((t, i) => new KeyValuePair<int, TareasView>(i + 1, t));
+}
+
+<h2>@LabelTitulo</h2>
+<h4>@LabelRecords</h4>
+
+<p>
+    @Html.ActionLink(LabelNew, "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            #
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ID)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Titulo)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Completada)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var pair in kvPairs)
+    {
+        var index = pair.Key;
+        var item = pair.Value;
+        bool tareaCompletada = item.Completada;
+        string tareaEstado = tareaCompletada ? "SI" : "NO";
+        <tr>
+            <td class="tdInt">
+                @index
+            </td>
+            <td class="tdInt">
+                @Html.DisplayFor(modelItem => item.ID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Titulo)
+            </td>
+            <td>
+                @tareaEstado
+            </td>
+            <td>
+                @Html.ActionLink(LabelEdit, "Edit", new { id = item.ID }) |
+                @Html.ActionLink(LabelDetails, "Details", new { id = item.ID }) |
+                @Html.ActionLink(LabelDelete, "Delete", new { id = item.ID }, new { @onclick = "javascript: return confirm('¿Esta seguro que desea eliminar?');" })
+            </td>
+        </tr>
+    }
+
+</table>
