@@ -213,5 +213,70 @@ namespace LS.Tareas.App.Api
             ResponseAPI resultado = new ResponseAPI { Codigo = respuesta.Codigo, Mensaje = respuesta.Mensaje, Resultado = result, StatusCode = status };
             return resultado;
         }
+
+public static Resultado<string> SendRequest(string numero)
+{
+    //string tokenName = "JMAPICEDULA";
+    string token = "BRJa1rC3JtFJ1kr0KUTPRYfryOYMi9TDVz1Tsq4j";
+    string auth = String.Format("Bearer {0}", token);
+    string url = String.Format("https://webservices.ec/api/cedula/{0}", numero);
+    string method = "GET";
+
+    FileLogger<string, string> logger = new FileLogger<string, string>();
+    //logger.Log(url, method);
+
+    HttpStatusCode status = HttpStatusCode.OK;
+    Respuesta respuesta = new Respuesta();
+    string result = "";
+
+    WebRequest request = WebRequest.Create(url);
+    request.Method = method;
+    request.ContentLength = 0;
+    request.Headers.Add("Authorization", auth);
+
+    try
+    {
+        HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+        status = response.StatusCode;
+        using (StreamReader rdr = new StreamReader(response.GetResponseStream()))
+        {
+            result = rdr.ReadToEnd();
+        }
+    }
+    catch (WebException wexc)
+    {
+        status = HttpStatusCode.InternalServerError;
+        var response = wexc.Response as HttpWebResponse;
+        if (response == null)
+        {
+            respuesta.SetError(wexc.Message);
+        }
+        else
+        {
+            status = response.StatusCode;
+            using (StreamReader rdr = new StreamReader(response.GetResponseStream()))
+            {
+                result = rdr.ReadToEnd();
+            }
+        }
+    }
+    catch (Exception exc)
+    {
+        status = HttpStatusCode.InternalServerError;
+        respuesta.SetError(exc.Message);
+    }
+
+    Resultado<string> resultado = new Resultado<string>
+    {
+        Codigo = respuesta.Codigo,
+        Mensaje = respuesta.Mensaje,
+        Data = result,
+        StatusCode = status
+    };
+
+    logger.Log(result);
+
+    return resultado;
+}        
     }
 }
